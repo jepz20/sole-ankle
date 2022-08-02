@@ -1,9 +1,9 @@
-import React from 'react';
-import styled from 'styled-components/macro';
+import React from "react";
+import styled from "styled-components/macro";
 
-import { COLORS, WEIGHTS } from '../../constants';
-import { formatPrice, pluralize, isNewShoe } from '../../utils';
-import Spacer from '../Spacer';
+import { COLORS, WEIGHTS } from "../../constants";
+import { formatPrice, pluralize, isNewShoe } from "../../utils";
+import Spacer from "../Spacer";
 
 const ShoeCard = ({
   slug,
@@ -31,10 +31,30 @@ const ShoeCard = ({
       ? 'new-release'
       : 'default'
 
+  let Variant = null;
+
+  switch (variant) {
+    case "on-sale": {
+      Variant = () => (
+        <Sale style={{ "--bg-color": COLORS.primary }}>Sale</Sale>
+      );
+      break;
+    }
+    case "new-release": {
+      Variant = () => (
+        <Sale style={{ "--bg-color": COLORS.secondary }}>New Release</Sale>
+      );
+      break;
+    }
+    default: {
+      Variant = null;
+    }
+  }
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
         <ImageWrapper>
+          {Variant && <Variant />}
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
         <Spacer size={12} />
@@ -43,7 +63,8 @@ const ShoeCard = ({
           <Price>{formatPrice(price)}</Price>
         </Row>
         <Row>
-          <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          <ColorInfo>{pluralize("Color", numOfColors)}</ColorInfo>
+          {salePrice && <SalePrice>{formatPrice(salePrice)}</SalePrice>}
         </Row>
       </Wrapper>
     </Link>
@@ -55,21 +76,30 @@ const Link = styled.a`
   color: inherit;
 `;
 
-const Wrapper = styled.article``;
+const Wrapper = styled.article`
+  height: 370px;
+  max-width: 344px;
+`;
 
 const ImageWrapper = styled.div`
   position: relative;
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  width: 100%;
+`;
 
 const Row = styled.div`
   font-size: 1rem;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
 `;
 
 const Name = styled.h3`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.gray[900]};
+  display: inline;
 `;
 
 const Price = styled.span``;
@@ -81,6 +111,16 @@ const ColorInfo = styled.p`
 const SalePrice = styled.span`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.primary};
+`;
+
+const Sale = styled.div`
+  background-color: var(--bg-color);
+  color: ${COLORS.white};
+  width: fit-content;
+  position: absolute;
+  padding: 10px;
+  top: 12px;
+  right: -4px;
 `;
 
 export default ShoeCard;
